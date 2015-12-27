@@ -1,32 +1,32 @@
 ## Downloads the file and saves it a local file folder
-if(!file.exists("./data")){dir.create("./data")}
+if(!file.exists("./data")){dir.create("./data")} # checks to see if the directory exists for storing the data
 fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 download.file(fileUrl, destfile = "./data/Dataset.zip")
 
-## Unzips the file
+## Unzips the file for use
 unzip(zipfile = "./data/Dataset.zip", exdir = "./data")
 
-## Loads the required packages
+## Loads the packages used for this project
 library(dplyr)
 library(data.table)
 
 ## This code block list all of the files that were downloaded
-path_rf <- file.path("./data" , "UCI HAR Dataset")
-files <- list.files(path_rf, recursive = TRUE)
+path_f <- file.path("./data" , "UCI HAR Dataset")
+files <- list.files(path_f, recursive = TRUE)
 files
 
 ## This code block reads the "Activity", "Subject" and "Fetures" files
-dataActivityTest  <- read.table(file.path(path_rf, "test" , "Y_test.txt" ), header = FALSE)
-dataActivityTrain <- read.table(file.path(path_rf, "train", "Y_train.txt"), header = FALSE)
-dataSubjectTest  <- read.table(file.path(path_rf, "test" , "subject_test.txt"), header = FALSE)
-dataSubjectTrain <- read.table(file.path(path_rf, "train", "subject_train.txt"), header = FALSE)
-dataFeaturesTest  <- read.table(file.path(path_rf, "test" , "X_test.txt" ),header = FALSE)
-dataFeaturesTrain <- read.table(file.path(path_rf, "train", "X_train.txt"),header = FALSE)
+dataActTest  <- read.table(file.path(path_f, "test" , "Y_test.txt" ), header = FALSE)
+dataActTrain <- read.table(file.path(path_f, "train", "Y_train.txt"), header = FALSE)
+dataSubTest  <- read.table(file.path(path_f, "test" , "subject_test.txt"), header = FALSE)
+dataSubTrain <- read.table(file.path(path_f, "train", "subject_train.txt"), header = FALSE)
+dataFeatTest  <- read.table(file.path(path_f, "test" , "X_test.txt" ),header = FALSE)
+dataFeatTrain <- read.table(file.path(path_f, "train", "X_train.txt"),header = FALSE)
 
 ## This code block merges the data sets and gives names to the variables
-dataSubject <- rbind(dataSubjectTrain, dataSubjectTest)
-dataActivity <- rbind(dataActivityTrain, dataActivityTest)
-dataFeatures <- rbind(dataFeaturesTrain, dataFeaturesTest)
+dataSubject <- rbind(dataSubTrain, dataSubTest)
+dataActivity <- rbind(dataActTrain, dataActTest)
+dataFeatures <- rbind(dataFeatTrain, dataFeatTest)
 names(dataSubject) <- c("subject")
 names(dataActivity) <- c("activity")
 dataFeaturesNames <- read.table(file.path(path_rf, "features.txt"),head=FALSE)
@@ -48,7 +48,7 @@ names(Data) <- gsub("Gyro", "Gyroscope", names(Data))
 names(Data) <- gsub("Mag", "Magnitude", names(Data))
 names(Data) <- gsub("BodyBody", "Body", names(Data))
 
-## Creates tidy data
+## Creates tidy data file
 DataTidy <- aggregate(. ~subject + activity, Data, mean)
 DataTidy <- DataTidy[order(DataTidy$subject, DataTidy$activity),]
 write.table(DataTidy, file = "tidydata.txt", row.name=FALSE)
